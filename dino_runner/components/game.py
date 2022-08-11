@@ -4,6 +4,7 @@ from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
 from dino_runner.utils.constants import BG, ICON, SCREEN_HEIGHT, SCREEN_WIDTH, TITLE, FPS
 from dino_runner.components.dinosaur import Dinosaur
 from dino_runner.components.obstacles.obstacle_manager import ObstacleManager
+from dino_runner.components.power_ups.power_up_manager import PowerUpManager
 
 class Game:
     def __init__(self):
@@ -18,6 +19,8 @@ class Game:
         self.y_pos_bg = 380
         self.player = Dinosaur() #
         self.obstacle_manager = ObstacleManager()
+        self.points = 0
+        self.power_up_manager = PowerUpManager()
 
     def run(self):
         # Game loop: events - update - draw
@@ -28,22 +31,29 @@ class Game:
             self.draw()
         pygame.quit()
 
+    def create_componets(self):
+        self.power_up_manager.reset_power_up(self.points)
+
+
     def events(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.playing = False
 
     def update(self):
-        user_input = pygame.key.get_pressed() #devuelve la tecla que se presiona
+        user_input = pygame.key.get_pressed() 
         self.player.update(user_input)
         self.obstacle_manager.update(self)
+        self.power_up_manager.update(self.points, self.game_speed, self.player)
 
     def draw(self):
+        self.score()
         self.clock.tick(FPS)
         self.screen.fill((255, 255, 255))
         self.draw_background()
         self.player.draw(self.screen) #
-        self.obstacle_manager.draw(self.screen)
+        self.obstacle_manager.draw(self.screen)#
+        self.power_up_manager.draw(self.screen)#
         pygame.display.update()
         pygame.display.flip()
 
@@ -55,3 +65,10 @@ class Game:
             self.screen.blit(BG, (image_width + self.x_pos_bg, self.y_pos_bg))
             self.x_pos_bg = 0
         self.x_pos_bg -= self.game_speed
+
+    def score(self):
+        self.points += 1
+        if self.points % 100 == 0:
+            self.game_speed += 1
+        self.player.check_invincibility(self.screen)
+
