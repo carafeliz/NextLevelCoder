@@ -95,7 +95,7 @@ class Dinosaur(Sprite): # heredando atributos de otra clase
                     font = pygame.font.Font('freesansbold.ttf', 18)
                     text = font.render(f'Shield enable for {time_to_show}', True, (0, 0, 0))
                     text_rect = text.get_rect()
-                    text_rect.center = (500, 4)
+                    text_rect.center = (500, 40)
                     screen.blit(text, text_rect)
             else:
                 self.shield = False
